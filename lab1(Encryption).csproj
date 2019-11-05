@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\BitCryptographer.cs" />
-    <Compile Include="Classes\Cryptographer.cs" />
     <Compile Include="Classes\ICryptographer.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
