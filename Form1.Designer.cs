@@ -35,6 +35,9 @@
             this.buttonDecrypt = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.label1 = new System.Windows.Forms.Label();
+            this.numericUpDownBias = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).BeginInit();
             this.SuspendLayout();
             // 
             // textBoxEncrypted
@@ -69,6 +72,7 @@
             this.buttonEncrypt.TabIndex = 1;
             this.buttonEncrypt.Text = "Encrypt";
             this.buttonEncrypt.UseVisualStyleBackColor = true;
+            this.buttonEncrypt.Click += new System.EventHandler(this.ButtonEncrypt_Click);
             // 
             // buttonDecrypt
             // 
@@ -78,12 +82,13 @@
             this.buttonDecrypt.TabIndex = 1;
             this.buttonDecrypt.Text = "Decrypt";
             this.buttonDecrypt.UseVisualStyleBackColor = true;
+            this.buttonDecrypt.Click += new System.EventHandler(this.ButtonDecrypt_Click);
             // 
             // splitter1
             // 
             this.splitter1.Location = new System.Drawing.Point(0, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 232);
+            this.splitter1.Size = new System.Drawing.Size(3, 269);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
@@ -95,11 +100,30 @@
             this.label1.Size = new System.Drawing.Size(694, 2);
             this.label1.TabIndex = 3;
             // 
+            // numericUpDownBias
+            // 
+            this.numericUpDownBias.Location = new System.Drawing.Point(332, 231);
+            this.numericUpDownBias.Name = "numericUpDownBias";
+            this.numericUpDownBias.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDownBias.TabIndex = 4;
+            this.numericUpDownBias.ValueChanged += new System.EventHandler(this.NumericUpDownBias_ValueChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(218, 238);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(93, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Смещение битов";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(714, 232);
+            this.ClientSize = new System.Drawing.Size(714, 269);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.numericUpDownBias);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.buttonDecrypt);
@@ -110,6 +134,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -124,6 +149,8 @@
         private System.Windows.Forms.Button buttonDecrypt;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numericUpDownBias;
+        private System.Windows.Forms.Label label2;
     }
 }
 
