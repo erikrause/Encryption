@@ -103,6 +103,16 @@
             // numericUpDownBias
             // 
             this.numericUpDownBias.Location = new System.Drawing.Point(332, 231);
+            this.numericUpDownBias.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.numericUpDownBias.Minimum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            -2147483648});
             this.numericUpDownBias.Name = "numericUpDownBias";
             this.numericUpDownBias.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownBias.TabIndex = 4;

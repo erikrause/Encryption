@@ -18,14 +18,11 @@ namespace lab1_Encryption_.Classes
 
         public string Decrypt(string text)
         {
-            int bitsInChar = sizeof(char) * 8;
             string decryptedText = "";
 
-            foreach (char ch in text)//(int i; i < text.Length; i++)
+            foreach (char ch in text)
             {
-                char transfer = (char)(ch >> (bitsInChar - Bias));
-                char newChar = (char)(ch << Bias);
-                newChar = (char)(newChar | transfer);
+                char newChar = BitShift(ch, -Bias);
                 decryptedText += newChar;
             }
 
@@ -34,18 +31,49 @@ namespace lab1_Encryption_.Classes
 
         public string Encrypt(string text)
         {
-            int bitsInChar = sizeof(char) * 8;
             string encryptedText = "";
 
-            foreach (char ch in text)//(int i; i < text.Length; i++)
+            foreach (char ch in text)
             {
-                char transfer = (char)(ch << (bitsInChar - Bias));
-                char newChar = (char)(ch >> Bias);
-                newChar = (char)(newChar | transfer);
+                char newChar = BitShift(ch, Bias);
                 encryptedText += newChar;
             }
 
             return encryptedText;
+        }
+
+        private char BitShift(char bit, int bias)
+        {
+            //int bitsInChar = sizeof(char) * 8;
+            char newBit;
+            char transfer = new char();
+            Func<char> shift;
+
+            if (bias >= 0)
+            {
+                shift = delegate()
+                {
+                    transfer = (char)(bit << (16 - bias));
+                    newBit = (char)(bit >> bias);
+                    newBit = (char)(newBit | transfer);
+                    return newBit;
+                };
+
+            }
+            else
+            {
+                bias = -bias;
+                shift = delegate()
+                {
+                    transfer = (char)(bit >> (16 - bias));
+                    newBit = (char)(bit << bias);
+                    newBit = (char)(newBit | transfer);
+                    return newBit;
+                };
+            }
+            newBit = shift();
+
+            return newBit;
         }
     }
 }
