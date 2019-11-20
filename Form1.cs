@@ -29,6 +29,8 @@ namespace lab1_Encryption_
         private void Form1_Load(object sender, EventArgs e)
         {
             CryptographerControl = cryptographerControl1;
+            buttonEncrypt.Enabled = false;
+            buttonDecrypt.Enabled = false;
         }
 
         private void CryptographerControl_ValueChanged(object sender, EventArgs e)
@@ -92,11 +94,14 @@ namespace lab1_Encryption_
                     {
                         var newControl = new KeyCryptographerControl();
                         ReplaceControl(newControl);
-                        CryptographerControl.ValuesChanged += CryptographerControl_ValueChanged;
+                        newControl.textBoxKey.TextChanged += CryptographerControl_ValueChanged;
                         return new KeyCryptographer(newControl.textBoxKey.Text);
                     }
                 }
             };
+
+            buttonEncrypt.Enabled = true;
+            buttonDecrypt.Enabled = true;
             Cryptographer = cryptoTypes[index]();
         }
 

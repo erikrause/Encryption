@@ -55,6 +55,7 @@
             this.textBoxOriginal.Name = "textBoxOriginal";
             this.textBoxOriginal.Size = new System.Drawing.Size(171, 180);
             this.textBoxOriginal.TabIndex = 0;
+            this.textBoxOriginal.Text = "Hello world!";
             // 
             // textBoxDecrypted
             // 

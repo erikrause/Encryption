@@ -27,13 +27,23 @@ namespace lab1_Encryption_.Classes
         }
         public string Decrypt(string text)
         {
-            throw new NotImplementedException();
+            string decryptedText = "";
+            int pos = 1;
+
+            foreach (char ch in text)
+            {
+                char newChar = Calculate(ch, pos, 1/_key);
+                decryptedText += newChar;
+                pos++;
+            }
+
+            return decryptedText;
         }
 
         public string Encrypt(string text)
         {
             string encryptedText = "";
-            int pos = 0;
+            int pos = 1;
 
             foreach (char ch in text)
             {
