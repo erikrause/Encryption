@@ -106,7 +106,8 @@
             this.comboBoxCryptographerType.FormattingEnabled = true;
             this.comboBoxCryptographerType.Items.AddRange(new object[] {
             "Шифрование смещением битов ( Лаб. № 1)",
-            "Шифрование с ключом (Лаб № 2)"});
+            "Шифрование с ключом (Лаб № 2)",
+            "ГОСТ (Лаб №3)"});
             this.comboBoxCryptographerType.Location = new System.Drawing.Point(288, 223);
             this.comboBoxCryptographerType.Name = "comboBoxCryptographerType";
             this.comboBoxCryptographerType.Size = new System.Drawing.Size(211, 21);

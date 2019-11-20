@@ -54,6 +54,15 @@ namespace lab1_Encryption_
                         var cryptographer = (KeyCryptographer)Cryptographer;
                         cryptographer.Key = control.textBoxKey.Text;
                     }
+                },
+                {
+                    typeof(GOSTCryptographer),
+                    () =>
+                    {
+                        var control = (GOSTCryptographerControl)CryptographerControl;
+                        var cryptographer = (GOSTCryptographer)Cryptographer;
+                        cryptographer.Key = control.textBoxKey.Text;
+                    }
                 }
             };
             cryptoTypes[Cryptographer.GetType()]();
@@ -96,6 +105,16 @@ namespace lab1_Encryption_
                         ReplaceControl(newControl);
                         newControl.textBoxKey.TextChanged += CryptographerControl_ValueChanged;
                         return new KeyCryptographer(newControl.textBoxKey.Text);
+                    }
+                },
+                {
+                2,
+                    () =>
+                    {
+                        var newControl = new GOSTCryptographerControl();
+                        ReplaceControl(newControl);
+                        newControl.textBoxKey.TextChanged += CryptographerControl_ValueChanged;
+                        return new GOSTCryptographer(newControl.textBoxKey.Text);
                     }
                 }
             };
