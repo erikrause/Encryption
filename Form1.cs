@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using lab1_Encryption_.Classes;
+using lab1_Encryption_.Forms;
 
 namespace lab1_Encryption_
 {
@@ -27,8 +28,9 @@ namespace lab1_Encryption_
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cryptographer = new BitCryptographer(3);
-            numericUpDownBias.Value = ((BitCryptographer)cryptographer).Bias;
+            numericUpDownBias.Visible = false;
+            textBoxKey.Visible = false;
+            cryptographerControl = cryptographerControl1;
         }
 
         private void NumericUpDownBias_ValueChanged(object sender, EventArgs e)
@@ -44,6 +46,50 @@ namespace lab1_Encryption_
         private void ButtonDecrypt_Click(object sender, EventArgs e)
         {
             textBoxDecrypted.Text = cryptographer.Decrypt(textBoxEncrypted.Text);
+        }
+
+        private void TextBoxKey_TextChanged(object sender, EventArgs e)
+        {
+            ((KeyCryptographer)cryptographer).Key = textBoxKey.Text;
+        }
+
+        CryptographerControl cryptographerControl;
+
+        private void ComboBoxCryptographerType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = comboBoxCryptographerType.SelectedIndex;
+
+            var cryptoTypes = new Dictionary<int, Func<ICryptographer>>
+            {
+                {
+                    0,
+                    () =>
+                    {
+                        numericUpDownBias.Visible = true;
+
+                        var newControl = new BitCryptographerControl();
+                        ReplaceControl(cryptographerControl, newControl);
+
+                        return new BitCryptographer((int)newControl.numericUpDownBias.Value);
+                    }
+                },
+                {
+                    1,
+                    () =>
+                    {
+                        textBoxKey.Visible = true;
+                        return new KeyCryptographer(textBoxKey.Text);
+                    }
+                }
+            };
+            cryptographer = cryptoTypes[index]();
+        }
+
+        protected void ReplaceControl(Control oldControl, Control newControl)
+        {
+            Controls.Remove(oldControl);
+            newControl.Location = oldControl.Location;
+            Controls.Add(newControl);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace lab1_Encryption_.Classes
 {
-    class BitCryptographer : ICryptographer
+    public class BitCryptographer : ICryptographer
     {
         // Смещение битов
         public int Bias;
@@ -42,10 +42,10 @@ namespace lab1_Encryption_.Classes
             return encryptedText;
         }
 
-        private char BitShift(char bit, int bias)
+        private char BitShift(char ch, int bias)
         {
             //int bitsInChar = sizeof(char) * 8;
-            char newBit;
+            char newCh;
             char transfer = new char();
             Func<char> shift;
 
@@ -53,10 +53,10 @@ namespace lab1_Encryption_.Classes
             {
                 shift = delegate()
                 {
-                    transfer = (char)(bit << (16 - bias));
-                    newBit = (char)(bit >> bias);
-                    newBit = (char)(newBit | transfer);
-                    return newBit;
+                    transfer = (char)(ch << (16 - bias));
+                    newCh = (char)(ch >> bias);
+                    newCh = (char)(newCh | transfer);
+                    return newCh;
                 };
 
             }
@@ -65,15 +65,15 @@ namespace lab1_Encryption_.Classes
                 bias = -bias;
                 shift = delegate()
                 {
-                    transfer = (char)(bit >> (16 - bias));
-                    newBit = (char)(bit << bias);
-                    newBit = (char)(newBit | transfer);
-                    return newBit;
+                    transfer = (char)(ch >> (16 - bias));
+                    newCh = (char)(ch << bias);
+                    newCh = (char)(newCh | transfer);
+                    return newCh;
                 };
             }
-            newBit = shift();
+            newCh = shift();
 
-            return newBit;
+            return newCh;
         }
     }
 }

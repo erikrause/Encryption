@@ -35,8 +35,13 @@
             this.buttonDecrypt = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.label1 = new System.Windows.Forms.Label();
+            this.comboBoxCryptographerType = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.numericUpDownBias = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBoxKey = new System.Windows.Forms.TextBox();
+            this.cryptographerControl1 = new lab1_Encryption_.Forms.CryptographerControl();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).BeginInit();
             this.SuspendLayout();
             // 
@@ -88,7 +93,7 @@
             // 
             this.splitter1.Location = new System.Drawing.Point(0, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 269);
+            this.splitter1.Size = new System.Drawing.Size(3, 428);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
@@ -100,9 +105,30 @@
             this.label1.Size = new System.Drawing.Size(694, 2);
             this.label1.TabIndex = 3;
             // 
+            // comboBoxCryptographerType
+            // 
+            this.comboBoxCryptographerType.FormattingEnabled = true;
+            this.comboBoxCryptographerType.Items.AddRange(new object[] {
+            "Шифрование смещением битов ( Лаб. № 1)",
+            "Шифрование с ключом (Лаб № 2)"});
+            this.comboBoxCryptographerType.Location = new System.Drawing.Point(288, 223);
+            this.comboBoxCryptographerType.Name = "comboBoxCryptographerType";
+            this.comboBoxCryptographerType.Size = new System.Drawing.Size(211, 21);
+            this.comboBoxCryptographerType.TabIndex = 7;
+            this.comboBoxCryptographerType.SelectedIndexChanged += new System.EventHandler(this.ComboBoxCryptographerType_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(186, 226);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(99, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "Тип шифрования: ";
+            // 
             // numericUpDownBias
             // 
-            this.numericUpDownBias.Location = new System.Drawing.Point(332, 231);
+            this.numericUpDownBias.Location = new System.Drawing.Point(411, 404);
             this.numericUpDownBias.Maximum = new decimal(new int[] {
             16,
             0,
@@ -121,17 +147,47 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(218, 238);
+            this.label2.Location = new System.Drawing.Point(309, 406);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(93, 13);
+            this.label2.Size = new System.Drawing.Size(96, 13);
             this.label2.TabIndex = 5;
-            this.label2.Text = "Смещение битов";
+            this.label2.Text = "Смещение битов:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(549, 406);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Ключ:";
+            // 
+            // textBoxKey
+            // 
+            this.textBoxKey.Location = new System.Drawing.Point(588, 404);
+            this.textBoxKey.Name = "textBoxKey";
+            this.textBoxKey.Size = new System.Drawing.Size(100, 20);
+            this.textBoxKey.TabIndex = 6;
+            this.textBoxKey.TextChanged += new System.EventHandler(this.TextBoxKey_TextChanged);
+            // 
+            // cryptographerControl1
+            // 
+            this.cryptographerControl1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.cryptographerControl1.Location = new System.Drawing.Point(187, 253);
+            this.cryptographerControl1.Name = "cryptographerControl1";
+            this.cryptographerControl1.Size = new System.Drawing.Size(335, 150);
+            this.cryptographerControl1.TabIndex = 8;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(714, 269);
+            this.ClientSize = new System.Drawing.Size(714, 428);
+            this.Controls.Add(this.cryptographerControl1);
+            this.Controls.Add(this.comboBoxCryptographerType);
+            this.Controls.Add(this.textBoxKey);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.numericUpDownBias);
             this.Controls.Add(this.label1);
@@ -159,8 +215,13 @@
         private System.Windows.Forms.Button buttonDecrypt;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBoxCryptographerType;
+        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown numericUpDownBias;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxKey;
+        private Forms.CryptographerControl cryptographerControl1;
     }
 }
 
