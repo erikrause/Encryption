@@ -42,7 +42,7 @@ namespace lab1_Encryption_.Classes
             return encryptedText;
         }
 
-        private char BitShift(char ch, int bias)
+        protected char BitShift(char ch, int bias)
         {
             //int bitsInChar = sizeof(char) * 8;
             char newCh;
