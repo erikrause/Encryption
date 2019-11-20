@@ -15,7 +15,7 @@ namespace lab1_Encryption_
 {
     public partial class Form1 : Form
     {
-        ICryptographer cryptographer;
+        ICryptographer Cryptographer;
 
         public string originalText;
         public string encryptedText;
@@ -28,32 +28,46 @@ namespace lab1_Encryption_
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            numericUpDownBias.Visible = false;
-            textBoxKey.Visible = false;
-            cryptographerControl = cryptographerControl1;
+            CryptographerControl = cryptographerControl1;
         }
 
-        private void NumericUpDownBias_ValueChanged(object sender, EventArgs e)
+        private void CryptographerControl_ValueChanged(object sender, EventArgs e)
         {
-            ((BitCryptographer)cryptographer).Bias = (int)numericUpDownBias.Value;
+            var cryptoTypes = new Dictionary<Type, Action>
+            {
+                {
+                    typeof(BitCryptographer),
+                    () =>
+                    {
+                        var control = (BitCryptographerControl)CryptographerControl;
+                        var cryptographer = (BitCryptographer)Cryptographer;
+                        cryptographer.Bias = (int)control.numericUpDownBias.Value;
+                    }
+                },
+                {
+                    typeof(KeyCryptographer),
+                    () =>
+                    {
+                        var control = (KeyCryptographerControl)CryptographerControl;
+                        var cryptographer = (KeyCryptographer)Cryptographer;
+                        cryptographer.Key = control.textBoxKey.Text;
+                    }
+                }
+            };
+            cryptoTypes[Cryptographer.GetType()]();
         }
 
         private void ButtonEncrypt_Click(object sender, EventArgs e)
         {
-            textBoxEncrypted.Text = cryptographer.Encrypt(textBoxOriginal.Text);
+            textBoxEncrypted.Text = Cryptographer.Encrypt(textBoxOriginal.Text);
         }
 
         private void ButtonDecrypt_Click(object sender, EventArgs e)
         {
-            textBoxDecrypted.Text = cryptographer.Decrypt(textBoxEncrypted.Text);
+            textBoxDecrypted.Text = Cryptographer.Decrypt(textBoxEncrypted.Text);
         }
 
-        private void TextBoxKey_TextChanged(object sender, EventArgs e)
-        {
-            ((KeyCryptographer)cryptographer).Key = textBoxKey.Text;
-        }
-
-        CryptographerControl cryptographerControl;
+        CryptographerControl CryptographerControl;
 
         private void ComboBoxCryptographerType_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -65,11 +79,10 @@ namespace lab1_Encryption_
                     0,
                     () =>
                     {
-                        numericUpDownBias.Visible = true;
 
                         var newControl = new BitCryptographerControl();
-                        ReplaceControl(cryptographerControl, newControl);
-
+                        ReplaceControl(newControl);
+                        newControl.numericUpDownBias.ValueChanged += CryptographerControl_ValueChanged;
                         return new BitCryptographer((int)newControl.numericUpDownBias.Value);
                     }
                 },
@@ -77,19 +90,22 @@ namespace lab1_Encryption_
                     1,
                     () =>
                     {
-                        textBoxKey.Visible = true;
-                        return new KeyCryptographer(textBoxKey.Text);
+                        var newControl = new KeyCryptographerControl();
+                        ReplaceControl(newControl);
+                        CryptographerControl.ValuesChanged += CryptographerControl_ValueChanged;
+                        return new KeyCryptographer(newControl.textBoxKey.Text);
                     }
                 }
             };
-            cryptographer = cryptoTypes[index]();
+            Cryptographer = cryptoTypes[index]();
         }
 
-        protected void ReplaceControl(Control oldControl, Control newControl)
+        protected void ReplaceControl(CryptographerControl newControl)
         {
-            Controls.Remove(oldControl);
-            newControl.Location = oldControl.Location;
+            Controls.Remove(CryptographerControl);
+            newControl.Location = CryptographerControl.Location;
             Controls.Add(newControl);
+            CryptographerControl = newControl;
         }
     }
 }

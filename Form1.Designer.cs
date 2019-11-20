@@ -37,12 +37,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.comboBoxCryptographerType = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.numericUpDownBias = new System.Windows.Forms.NumericUpDown();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBoxKey = new System.Windows.Forms.TextBox();
             this.cryptographerControl1 = new lab1_Encryption_.Forms.CryptographerControl();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).BeginInit();
             this.SuspendLayout();
             // 
             // textBoxEncrypted
@@ -126,50 +121,6 @@
             this.label4.TabIndex = 5;
             this.label4.Text = "Тип шифрования: ";
             // 
-            // numericUpDownBias
-            // 
-            this.numericUpDownBias.Location = new System.Drawing.Point(411, 404);
-            this.numericUpDownBias.Maximum = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.numericUpDownBias.Minimum = new decimal(new int[] {
-            16,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDownBias.Name = "numericUpDownBias";
-            this.numericUpDownBias.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDownBias.TabIndex = 4;
-            this.numericUpDownBias.ValueChanged += new System.EventHandler(this.NumericUpDownBias_ValueChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(309, 406);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(96, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Смещение битов:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(549, 406);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Ключ:";
-            // 
-            // textBoxKey
-            // 
-            this.textBoxKey.Location = new System.Drawing.Point(588, 404);
-            this.textBoxKey.Name = "textBoxKey";
-            this.textBoxKey.Size = new System.Drawing.Size(100, 20);
-            this.textBoxKey.TabIndex = 6;
-            this.textBoxKey.TextChanged += new System.EventHandler(this.TextBoxKey_TextChanged);
-            // 
             // cryptographerControl1
             // 
             this.cryptographerControl1.BackColor = System.Drawing.SystemColors.ActiveBorder;
@@ -185,11 +136,7 @@
             this.ClientSize = new System.Drawing.Size(714, 428);
             this.Controls.Add(this.cryptographerControl1);
             this.Controls.Add(this.comboBoxCryptographerType);
-            this.Controls.Add(this.textBoxKey);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.numericUpDownBias);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.buttonDecrypt);
@@ -200,7 +147,6 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -217,10 +163,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBoxCryptographerType;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown numericUpDownBias;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBoxKey;
         private Forms.CryptographerControl cryptographerControl1;
     }
 }

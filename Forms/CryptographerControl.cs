@@ -16,6 +16,5 @@ namespace lab1_Encryption_.Forms
         {
             InitializeComponent();
         }
-        public EventHandler ValuesChanged;
     }
 }

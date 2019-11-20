@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace lab1_Encryption_.Forms
 {
-    class BitCryptographerControl : CryptographerControl
+    public class BitCryptographerControl : CryptographerControl
     {
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.NumericUpDown numericUpDownBias;
 
         protected override void InitializeComponent()
         {
+            base.InitializeComponent();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDownBias = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).BeginInit();
@@ -48,7 +49,6 @@ namespace lab1_Encryption_.Forms
             0,
             0,
             0});
-            this.numericUpDownBias.ValueChanged += ValuesChanged;
             // 
             // BitCryptographerControl
             // 
@@ -59,6 +59,7 @@ namespace lab1_Encryption_.Forms
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBias)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
     }
 }
