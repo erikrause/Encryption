@@ -28,6 +28,9 @@ namespace lab1_Encryption_.Classes
                                              { 4, 11, 10, 0, 7, 2, 1, 13, 3, 6, 8, 5, 9, 12, 15, 14 },
                                              { 13, 11, 4, 1, 3, 15, 5, 9, 0, 10, 14, 7, 6, 8, 2, 12},
                                              { 1, 15, 13, 0, 5, 7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12 } };
+
+        public static readonly byte[,] S0 = new byte[8, 16];
+
         public static readonly byte[] E =
         {
             32,1,2,3,4,5,
@@ -49,19 +52,31 @@ namespace lab1_Encryption_.Classes
         {
             set
             {
-                _key = new BitArray(Encoding.UTF8.GetBytes(value));
+                _key = new BitArray(Encoding.ASCII.GetBytes(value));
                 _key.Length = 256;
             }
         }
         public string Encrypt(string text)
         {
-            var X = GenerateSubkeys();
-            //int numberOfBlocks = (text.Length / 64 + 1) * 64;
-            var input = new BitArray(Encoding.UTF8.GetBytes(text));
+            var input = new BitArray(Encoding.ASCII.GetBytes(text));
+
+            var outputBits = Calculate(input, true);
+
+            var outputBytes = new byte[outputBits.Length / 8];
+            outputBits.CopyTo(outputBytes, 0);
+
+
+            return Encoding.ASCII.GetString(outputBytes);
+        }
+
+        protected BitArray Calculate(BitArray input, bool isEncryption)
+        {
+            var X = GenerateSubkeys(isEncryption);
             var outputBits = new BitArray(0);
             // Проверка открытого текста на кратность 64 битам:
-            input.Length += input.Length % 64;
-            int numberOfBlocks = (text.Length / (64 / 8));
+            var prob = input.Length % 64;
+            input.Length += input.Length % 64;      // ИСПРАВИТЬ!
+            int numberOfBlocks = (input.Length / 64);
 
             for (int block = 0; block < numberOfBlocks; block++)
             {
@@ -88,10 +103,18 @@ namespace lab1_Encryption_.Classes
                 outputBits = BitsAppend(outputBits, B);
             }
 
+            return outputBits;
+        }
+        public string Decrypt(string text)
+        {
+            var input = new BitArray(Encoding.ASCII.GetBytes(text));
+
+            var outputBits = Calculate(input, false);
+
             var outputBytes = new byte[outputBits.Length / 8];
             outputBits.CopyTo(outputBytes, 0);
 
-            return Encoding.UTF8.GetString(outputBytes);
+            return Encoding.ASCII.GetString(outputBytes);
         }
 
         protected BitArray Function(BitArray A, BitArray X, int round)
@@ -100,17 +123,10 @@ namespace lab1_Encryption_.Classes
             var partsA = new BitArray[8];
             var outputBits = new BitArray(0);
 
-            // DEBUG: 
-            BitArray bits = new BitArray(new bool[]
-            {
-                true, false, false, false
-            });
-
-            byte[] bytes = new byte[1];
-            bits.CopyTo(bytes, 0);
-            bits = new BitArray(bytes);
-
-            ////////////////////
+            // DEBUG:
+            byte[] bytes = new byte[A.Count];
+            A.CopyTo(bytes, 0);
+            ////////
 
             for (int i = 0; i < partsA.Length; i++)
             {
@@ -119,13 +135,12 @@ namespace lab1_Encryption_.Classes
             for (int i = 0; i < partsA.Length; i++)
             {
                 var val = new byte[1];
-                var part = partsA[i];
-                part.CopyTo(val, 0);
+                partsA[i].CopyTo(val, 0);
                 byte[] newVal = new byte[] { S[i, val[0]] };
 
-                part = new BitArray(newVal);
+                partsA[i] = new BitArray(newVal);
                 // From 8 bits to 4 bits:
-                part = new BitArray(part.Cast<bool>().Take(4).ToArray());
+                partsA[i] = new BitArray(partsA[i].Cast<bool>().Take(4).ToArray());
                 
             }
             
@@ -137,18 +152,13 @@ namespace lab1_Encryption_.Classes
             return outputBits;
         }
 
-        public string Decrypt(string text)
-        {
-            
-            throw new NotImplementedException();
-        }
-
-        protected BitArray[] GenerateSubkeys()
+        protected BitArray[] GenerateSubkeys(bool isEncryption)
         {
             var K = new BitArray[8];
             var X = new BitArray[32];
             int i, j;
 
+            // K initializetion:
             for (i = 0; i < K.Length; i++)
             {
                 K[i] = new BitArray(32);
@@ -159,21 +169,47 @@ namespace lab1_Encryption_.Classes
                 }
             }
 
-            j = 0;
-            for (i = 0; i < 24; i++)
+            if (isEncryption)
             {
-                X[i] = K[j];
-                j++;
-                if (j == 8) j = 0;
-            }
+                // X initializetion: 
+                j = 0;
+                for (i = 0; i < 24; i++)
+                {
+                    X[i] = K[j];
+                    j++;
+                    if (j == 8) j = 0;
+                }
 
-            j = 7;
-            for (i = 24; i < 32; i++)
-            {
-                X[i] = K[j];
-                j--;
+                // Reversed X initialization:
+                j = 7;
+                for (i = 24; i < 32; i++)
+                {
+                    X[i] = K[j];
+                    j--;
+                }
+                return X;
             }
-            return X;
+            else
+            {
+                // X initializetion: 
+                j = 0;
+                for (i = 0; i < 8; i++)
+                {
+                    X[i] = K[j];
+                    j++;
+                }
+
+                // Reversed X initialization:
+                j = 7;
+                for (i = 8; i < 32; i++)
+                {
+                    X[i] = K[j];
+                    j--;
+                    if (j == -1) j = 7;
+                }
+                return X;
+            }
+            
         }
 
         public BitArray BitsAppend(BitArray current, BitArray after)
