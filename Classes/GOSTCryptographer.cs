@@ -98,7 +98,7 @@ namespace lab1_Encryption_.Classes
                 var A = new BitArray(32);
                 var B = new BitArray(32);
 
-                // Initializating input:
+                // Initializating inputs:
                 for (int i = 0; i < 32; i++)
                 {
                     A[i] = input[i + 64 * block];
@@ -108,11 +108,12 @@ namespace lab1_Encryption_.Classes
                 for (int round = 0; round < 32; round++)
                 {
                     var f = Function(A, X[round], round);
-                    var newA = B.Xor(f);
+                    var newA = B;
+                    newA.Xor(f);
                     var newB = A;
 
                     A = newA;
-                   B = newB;
+                    B = newB;
                 }
                 outputBits = BitsAppend(outputBits, A);
                 outputBits = BitsAppend(outputBits, B);
@@ -132,20 +133,21 @@ namespace lab1_Encryption_.Classes
             return Encoding.ASCII.GetString(outputBytes);
         }
 
-        protected BitArray Function(BitArray A, BitArray X, int round)
+        protected BitArray Function(in BitArray A, in BitArray X, int round)
         {
-            A = A.Xor(X);
+            var newA = new BitArray(A);
+            newA.Xor(X);
             var partsA = new BitArray[8];
             var outputBits = new BitArray(0);
 
             // DEBUG:
-            byte[] bytes = new byte[A.Count];
-            A.CopyTo(bytes, 0);
+            byte[] bytes = new byte[newA.Count];
+            newA.CopyTo(bytes, 0);
             ////////
 
             for (int i = 0; i < partsA.Length; i++)
             {
-                partsA[i] = new BitArray(A.Cast<bool>().Skip(i*4).Take(4).ToArray());
+                partsA[i] = new BitArray(newA.Cast<bool>().Skip(i*4).Take(4).ToArray());
             }
             for (int i = 0; i < partsA.Length; i++)
             {
@@ -164,9 +166,9 @@ namespace lab1_Encryption_.Classes
                 outputBits = BitsAppend(outputBits, part);
             }
 
-            var outputBits2 = BitShift(outputBits, 11);
+            //var output = BitShift(outputBits, 11);
 
-            return outputBits2;
+            return outputBits;
         }
 
         protected BitArray[] GenerateSubkeys(bool isEncryption)
@@ -175,7 +177,7 @@ namespace lab1_Encryption_.Classes
             var X = new BitArray[32];
             int i, j;
 
-            // K initializetion:
+            // K initialization:
             for (i = 0; i < K.Length; i++)
             {
                 K[i] = new BitArray(32);
@@ -188,7 +190,7 @@ namespace lab1_Encryption_.Classes
 
             if (isEncryption)
             {
-                // X initializetion: 
+                // X initialization: 
                 j = 0;
                 for (i = 0; i < 24; i++)
                 {
