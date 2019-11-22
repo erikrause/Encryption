@@ -16,7 +16,7 @@ namespace lab1_Encryption_.Classes
                                              30, 22, 14, 6, 61, 53, 45, 37, 29, 21,
                                              13, 5, 28, 20, 12, 4 };
 
-        public static readonly byte[,] S ={ { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9,
+        public static readonly byte[,] S1 ={ { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9,
                                                0, 7 },
                                              { 0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9,
                                                5, 3, 8 },
@@ -30,6 +30,17 @@ namespace lab1_Encryption_.Classes
                                              { 1, 15, 13, 0, 5, 7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12 } };
 
         public static readonly byte[,] S0 = new byte[8, 16];
+
+        public static readonly byte[,] S = new byte[8, 16] { 
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+        };
 
         public static readonly byte[] E =
         {
@@ -74,8 +85,12 @@ namespace lab1_Encryption_.Classes
             var X = GenerateSubkeys(isEncryption);
             var outputBits = new BitArray(0);
             // Проверка открытого текста на кратность 64 битам:
-            var prob = input.Length % 64;
-            input.Length += input.Length % 64;      // ИСПРАВИТЬ!
+            var mod = input.Length % 64;
+            if (mod != 0)
+            {
+                input.Length += 64 - mod;
+            }
+
             int numberOfBlocks = (input.Length / 64);
 
             for (int block = 0; block < numberOfBlocks; block++)
@@ -97,7 +112,7 @@ namespace lab1_Encryption_.Classes
                     var newB = A;
 
                     A = newA;
-                    B = newB;
+                   B = newB;
                 }
                 outputBits = BitsAppend(outputBits, A);
                 outputBits = BitsAppend(outputBits, B);
@@ -149,7 +164,9 @@ namespace lab1_Encryption_.Classes
                 outputBits = BitsAppend(outputBits, part);
             }
 
-            return outputBits;
+            var outputBits2 = BitShift(outputBits, 11);
+
+            return outputBits2;
         }
 
         protected BitArray[] GenerateSubkeys(bool isEncryption)
@@ -191,7 +208,7 @@ namespace lab1_Encryption_.Classes
             }
             else
             {
-                // X initializetion: 
+                // X initialization: 
                 j = 0;
                 for (i = 0; i < 8; i++)
                 {
@@ -246,7 +263,7 @@ namespace lab1_Encryption_.Classes
                 // Перенос битов справа налево:
                 for (int i = bitArray.Length - bias; i < bitArray.Length; i++)
                 {
-                    newBitArray[bitArray.Length - i] = bitArray[i];
+                    newBitArray[bitArray.Length - i - 1] = bitArray[i];
                 }
             }
             else
@@ -260,7 +277,7 @@ namespace lab1_Encryption_.Classes
                 // Перенос битов:
                 for (int i = bitArray.Length - bias; i < bitArray.Length; i++)
                 {
-                    newBitArray[i] = bitArray[bitArray.Length - i];
+                    newBitArray[i] = bitArray[bitArray.Length - i - 1];
                 }
             }
 
