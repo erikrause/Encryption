@@ -17,9 +17,7 @@ namespace lab1_Encryption_
     {
         ICryptographer Cryptographer;
 
-        public string originalText;
         public string encryptedText;
-        public string decryptedText;
 
         public Form1()
         {
@@ -70,12 +68,13 @@ namespace lab1_Encryption_
 
         private void ButtonEncrypt_Click(object sender, EventArgs e)
         {
-            textBoxEncrypted.Text = Cryptographer.Encrypt(textBoxOriginal.Text);
+            encryptedText = Cryptographer.Encrypt(textBoxOriginal.Text);    // Храним зашифрованный текст в переменной, т.к. textbox стирает служебные символы.
+            textBoxEncrypted.Text = encryptedText;
         }
 
         private void ButtonDecrypt_Click(object sender, EventArgs e)
         {
-            textBoxDecrypted.Text = Cryptographer.Decrypt(textBoxEncrypted.Text);
+            textBoxDecrypted.Text = Cryptographer.Decrypt(encryptedText);
         }
 
         CryptographerControl CryptographerControl;

@@ -166,9 +166,9 @@ namespace lab1_Encryption_.Classes
                 outputBits = BitsAppend(outputBits, part);
             }
 
-            //var output = BitShift(outputBits, 11);
+            var output = BitShift(outputBits, 11);
 
-            return outputBits;
+            return output;
         }
 
         protected BitArray[] GenerateSubkeys(bool isEncryption)
