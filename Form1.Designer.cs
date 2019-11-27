@@ -107,7 +107,8 @@
             this.comboBoxCryptographerType.Items.AddRange(new object[] {
             "Шифрование смещением битов ( Лаб. № 1)",
             "Шифрование с ключом (Лаб № 2)",
-            "ГОСТ (Лаб №3)"});
+            "ГОСТ (Лаб №3)",
+            "RSA (Лаб №4)"});
             this.comboBoxCryptographerType.Location = new System.Drawing.Point(288, 223);
             this.comboBoxCryptographerType.Name = "comboBoxCryptographerType";
             this.comboBoxCryptographerType.Size = new System.Drawing.Size(211, 21);
@@ -119,7 +120,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(186, 226);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(99, 13);
+            this.label4.Size = new System.Drawing.Size(105, 13);
             this.label4.TabIndex = 5;
             this.label4.Text = "Тип шифрования: ";
             // 

@@ -109,13 +109,23 @@ namespace lab1_Encryption_
                     }
                 },
                 {
-                2,
+                    2,
                     () =>
                     {
                         var newControl = new GOSTCryptographerControl();
                         ReplaceControl(newControl);
                         newControl.textBoxKey.TextChanged += CryptographerControl_ValueChanged;
                         return new GOSTCryptographer(newControl.textBoxKey.Text);
+                    }
+                },
+                {
+                    3,
+                    () =>
+                    {
+                        var newControl = new RSACryptographerControl();
+                        ReplaceControl(newControl);
+                        //newControl.
+                        return new RSACryptographer();
                     }
                 }
             };
