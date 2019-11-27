@@ -87,7 +87,8 @@ namespace lab1_Encryption_
         {
             var data = Encoding.ASCII.GetBytes(textBoxOriginal.Text);
             encryptedData = Cryptographer.Encrypt(data);    // Храним зашифрованный текст в переменной, т.к. textbox стирает служебные символы.
-            textBoxEncrypted.Text = Encoding.ASCII.GetString(encryptedData);
+
+            textBoxEncrypted.Text = Encoding.ASCII.GetString(encryptedData.Where(x => x > 0 ).ToArray()); // +parse zeros ('\0' to '0'):
         }
 
         private void ButtonDecrypt_Click(object sender, EventArgs e)
