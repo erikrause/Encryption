@@ -61,6 +61,23 @@ namespace lab1_Encryption_
                         var cryptographer = (GOSTCryptographer)Cryptographer;
                         cryptographer.Key = control.textBoxKey.Text;
                     }
+                },
+                {
+                    typeof(RSACryptographer),
+                    () =>
+                    {
+                        var control = (RSACryptographerControl)CryptographerControl;
+                        var cryptographer = (RSACryptographer)Cryptographer;
+
+                        var p = Convert.ToUInt64(control.textBoxP.Text);
+                        var q = Convert.ToUInt64(control.textBoxQ.Text);
+                        cryptographer.SetKeys(p, q);
+
+                        var nValue = cryptographer.n;
+                        var eValue = cryptographer.e;
+                        control.textBoxN.Text = Convert.ToString(nValue);
+                        control.textBoxE.Text = Convert.ToString(eValue);
+                    }
                 }
             };
             cryptoTypes[Cryptographer.GetType()]();
@@ -124,8 +141,17 @@ namespace lab1_Encryption_
                     {
                         var newControl = new RSACryptographerControl();
                         ReplaceControl(newControl);
-                        //newControl.
-                        return new RSACryptographer();
+                        newControl.textBoxP.TextChanged += CryptographerControl_ValueChanged;
+                        newControl.textBoxQ.TextChanged += CryptographerControl_ValueChanged;
+                        var p = Convert.ToUInt64(newControl.textBoxP.Text);
+                        var q = Convert.ToUInt64(newControl.textBoxQ.Text);
+                        
+                        var cryptographer = new RSACryptographer(p, q);
+                        var nValue = cryptographer.n;
+                        var eValue = cryptographer.e;
+                        newControl.textBoxN.Text = Convert.ToString(nValue);
+                        newControl.textBoxE.Text = Convert.ToString(eValue);
+                        return cryptographer;
                     }
                 }
             };

@@ -4,31 +4,49 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace lab1_Encryption_.Classes
 {
     class RSACryptographer : ICryptographer
     {
-        protected ulong p;
-        protected ulong q;
-        protected ulong n; 
+        public ulong p;
+        public ulong q;
+        public ulong n; 
         protected ulong Euler;
         protected ulong d;
-        protected ulong e;
+        public ulong e;
 
+        public RSACryptographer(ulong p, ulong q)
+        {
+            SetKeys(p, q);
+        }
         public void SetKeys(ulong p, ulong q)
         {
-            if (!(IsSimple(p)&&IsSimple(q)))
-            {
-                throw new ArgumentException("Args is not simple.");
-            }
             this.p = p;
             this.q = q;
 
-            n = p * q;
-            Euler = (p - 1) * (q - 1);
-            d = Calculate_d(Euler);
-            e = Calculate_e(d, Euler);
+            if (CheckKeys())
+            {
+                n = p * q;
+                Euler = (p - 1) * (q - 1);
+                d = Calculate_d(Euler);
+                e = Calculate_e(d, Euler);
+            }
+            else
+            {
+                this.p = 0;
+                this.q = 0;
+                e = 0;
+                n = 0;
+                d = 0;
+                Euler = 0;
+            }
+        }
+
+        public bool CheckKeys()
+        {
+            return IsSimple(p) && IsSimple(q);
         }
 
         private ulong Calculate_d(ulong Euler)
@@ -62,64 +80,78 @@ namespace lab1_Encryption_.Classes
 
         public byte[] Encrypt(byte[] data)
         {
-            var result = new List<ulong>();
-
-            BigInteger b;
-
-            for(int i = 0; i < data.Length; i++)
+            if (CheckKeys())
             {
-                b = new BigInteger(data[i]);
-                b = BigInteger.Pow(b, (int)e);  // try ModPow
+                var result = new List<ulong>();
 
-                b = b % n;  // check
+                BigInteger b;
 
-                result.Add((ulong)b);
+                for (int i = 0; i < data.Length; i++)
+                {
+                    b = new BigInteger(data[i]);
+                    b = BigInteger.Pow(b, (int)e);  // try ModPow
+
+                    b = b % n;  // check
+
+                    result.Add((ulong)b);
+                }
+
+                #region UInt64[] to byte[]
+
+                List<byte> resultBytes = new List<byte>();
+
+                foreach (ulong value in result)
+                {
+                    var bytes = BitConverter.GetBytes(value);
+                    resultBytes.AddRange(bytes);
+                }
+
+                #endregion
+
+                return resultBytes.ToArray();
             }
-
-            #region UInt64[] to byte[]
-
-            List<byte> resultBytes = new List<byte>();
-
-            foreach (ulong value in result)
+            else
             {
-                var bytes = BitConverter.GetBytes(value);
-                resultBytes.AddRange(bytes);
+                return Encoding.ASCII.GetBytes("ERROR: Keys is not simple.");
             }
-
-            #endregion
-
-            return resultBytes.ToArray();
         }
 
         public byte[] Decrypt(byte[] data)
         {
-            #region byte[] to UInt64[]
-
-            List<ulong> dataLong = new List<ulong>();
-
-            for (int i = 0; i < data.Length; i += 8)
+            if (CheckKeys())
             {
-                var value = BitConverter.ToUInt32(data, i);
-                dataLong.Add(value);
+                #region byte[] to UInt64[]
+
+                List<ulong> dataLong = new List<ulong>();
+
+                for (int i = 0; i < data.Length; i += 8)
+                {
+                    var value = BitConverter.ToUInt32(data, i);
+                    dataLong.Add(value);
+                }
+
+                #endregion
+
+                var result = new List<byte>();
+
+                BigInteger b;
+
+                for (int i = 0; i < dataLong.Count; i++)
+                {
+                    b = new BigInteger(dataLong[i]);
+                    b = BigInteger.Pow(b, (int)d);  // try ModPow
+
+                    b = b % n;  // check n_
+
+                    result.Add((byte)b);
+                }
+
+                return result.ToArray();
             }
-
-            #endregion
-
-            var result = new List<byte>();
-
-            BigInteger b;
-
-            for (int i = 0; i < dataLong.Count; i++)
+            else
             {
-                b = new BigInteger(dataLong[i]);
-                b = BigInteger.Pow(b, (int)d);  // try ModPow
-
-                b = b % n;  // check n_
-
-                result.Add((byte)b);
+                return Encoding.ASCII.GetBytes("ERROR: Keys is not simple.");
             }
-
-            return result.ToArray();
         }
         /// <summary>
         /// Проверяет, простое ли число
@@ -139,6 +171,68 @@ namespace lab1_Encryption_.Classes
                     return false;
 
             return true;
+        }
+        /// <summary>
+        /// Генератор массива простых чисел.
+        /// </summary>
+        /// <param name="toGenerate"> Количество простых чисел.</param>
+        /// <returns></returns>
+        public static List<int> GeneratePrimes(int toGenerate)
+        {
+            var primes = new List<int>();
+            primes.Add(2);
+            primes.Add(3);
+            while (primes.Count < toGenerate)
+            {
+                int nextPrime = (int)(primes[primes.Count - 1]) + 2;
+                while (true)
+                {
+                    bool isPrime = true;
+                    foreach (int n in primes)
+                    {
+                        if (nextPrime % n == 0)
+                        {
+                            isPrime = false;
+                            break;
+                        }
+                    }
+                    if (isPrime)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        nextPrime += 2;
+                    }
+                }
+                primes.Add(nextPrime);
+            }
+            return primes;
+        }
+        public static List<int> GeneratePrimesNaive(int n)
+        {
+            List<int> primes = new List<int>();
+            primes.Add(2);
+            int nextPrime = 3;
+            while (primes.Count < n)
+            {
+                int sqrt = (int)Math.Sqrt(nextPrime);
+                bool isPrime = true;
+                for (int i = 0; (int)primes[i] <= sqrt; i++)
+                {
+                    if (nextPrime % primes[i] == 0)
+                    {
+                        isPrime = false;
+                        break;
+                    }
+                }
+                if (isPrime)
+                {
+                    primes.Add(nextPrime);
+                }
+                nextPrime += 2;
+            }
+            return primes;
         }
     }
 }
