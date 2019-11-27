@@ -16,47 +16,47 @@ namespace lab1_Encryption_.Classes
             Bias = bias;
         }
 
-        public string Decrypt(string text)
+        public byte[] Decrypt(byte[] data)
         {
-            string decryptedText = "";
+            List<byte> decryptedData = new List<byte>();
 
-            foreach (char ch in text)
+            foreach (byte b in data)
             {
-                char newChar = BitShift(ch, -Bias);
-                decryptedText += newChar;
+                byte newByte = BitShift(b, -Bias);
+                decryptedData.Add(newByte);
             }
 
-            return decryptedText;
+            return decryptedData.ToArray();
         }
 
-        public string Encrypt(string text)
+        public byte[] Encrypt(byte[] data)
         {
-            string encryptedText = "";
+            List<byte> encryptedData = new List<byte>();
 
-            foreach (char ch in text)
+            foreach (byte b in data)
             {
-                char newChar = BitShift(ch, Bias);
-                encryptedText += newChar;
+                byte newByte = BitShift(b, Bias);
+                encryptedData.Add(newByte);
             }
 
-            return encryptedText;
+            return encryptedData.ToArray();
         }
 
-        protected char BitShift(char ch, int bias)
+        protected byte BitShift(byte ch, int bias)
         {
             //int bitsInChar = sizeof(char) * 8;
-            char newCh;
-            char transfer = new char();
-            Func<char> shift;
+            byte newByte;
+            byte transfer = new byte();
+            Func<byte> shift;
 
             if (bias >= 0)
             {
                 shift = delegate()
                 {
-                    transfer = (char)(ch << (16 - bias));
-                    newCh = (char)(ch >> bias);
-                    newCh = (char)(newCh | transfer);
-                    return newCh;
+                    transfer = (byte)(ch << (8 - bias));
+                    newByte = (byte)(ch >> bias);
+                    newByte = (byte)(newByte | transfer);
+                    return newByte;
                 };
 
             }
@@ -65,15 +65,15 @@ namespace lab1_Encryption_.Classes
                 bias = -bias;
                 shift = delegate()
                 {
-                    transfer = (char)(ch >> (16 - bias));
-                    newCh = (char)(ch << bias);
-                    newCh = (char)(newCh | transfer);
-                    return newCh;
+                    transfer = (byte)(ch >> (8 - bias));
+                    newByte = (byte)(ch << bias);
+                    newByte = (byte)(newByte | transfer);
+                    return newByte;
                 };
             }
-            newCh = shift();
+            newByte = shift();
 
-            return newCh;
+            return newByte;
         }
     }
 }

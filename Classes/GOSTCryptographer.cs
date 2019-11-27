@@ -84,21 +84,22 @@ namespace lab1_Encryption_.Classes
                 }
             }
         }
-        public string Encrypt(string text)
+        public byte[] Encrypt(byte[] data)
         {
-            UInt64[] inputBlocks = GetBlocks(text);
+            UInt64[] inputBlocks = null; // GetBlocks(data);
             var outputBlocks = SimpleReplacement(inputBlocks, true);
-            //var outputBytes = new byte[outputBlocks.Length / 8];
-            //outputBlocks.CopyTo(outputBytes, 0);
+
             byte[] outputBytes = GetBytes(outputBlocks);
-            return Encoding.ASCII.GetString(outputBytes);
+            //return Encoding.ASCII.GetString(outputBytes);
+            return null;
         }
-        public string Decrypt(string text)
+        public byte[] Decrypt(byte[] data)
         {
-            UInt64[] inputBlocks = GetBlocks(text);
+            UInt64[] inputBlocks = null; //GetBlocks(data);
             var outputBlocks = SimpleReplacement(inputBlocks, false);
             byte[] outputBytes = GetBytes(outputBlocks);
-            return Encoding.ASCII.GetString(outputBytes);
+            //return Encoding.ASCII.GetString(outputBytes);
+            return null;
         }
         protected UInt64[] GetBlocks(string input)
         {

@@ -17,7 +17,7 @@ namespace lab1_Encryption_
     {
         ICryptographer Cryptographer;
 
-        public string encryptedText;
+        protected byte[] encryptedData;
 
         public Form1()
         {
@@ -68,13 +68,15 @@ namespace lab1_Encryption_
 
         private void ButtonEncrypt_Click(object sender, EventArgs e)
         {
-            encryptedText = Cryptographer.Encrypt(textBoxOriginal.Text);    // Храним зашифрованный текст в переменной, т.к. textbox стирает служебные символы.
-            textBoxEncrypted.Text = encryptedText;
+            var data = Encoding.ASCII.GetBytes(textBoxOriginal.Text);
+            encryptedData = Cryptographer.Encrypt(data);    // Храним зашифрованный текст в переменной, т.к. textbox стирает служебные символы.
+            textBoxEncrypted.Text = Encoding.ASCII.GetString(encryptedData);
         }
 
         private void ButtonDecrypt_Click(object sender, EventArgs e)
         {
-            textBoxDecrypted.Text = Cryptographer.Decrypt(encryptedText);
+            var bytes = Cryptographer.Decrypt(encryptedData);
+            textBoxDecrypted.Text = Encoding.ASCII.GetString(bytes);
         }
 
         CryptographerControl CryptographerControl;

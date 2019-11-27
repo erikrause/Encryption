@@ -8,8 +8,8 @@ namespace lab1_Encryption_.Classes
 {
     interface ICryptographer
     {
-        string Encrypt(string text);
+        byte[] Encrypt(byte[] data);
 
-        string Decrypt(string text);
+        byte[] Decrypt(byte[] data);
     }
 }

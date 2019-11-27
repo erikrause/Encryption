@@ -25,42 +25,42 @@ namespace lab1_Encryption_.Classes
         {
             Key = key;
         }
-        public string Decrypt(string text)
+        public byte[] Decrypt(byte[] data)
         {
-            string decryptedText = "";
+            List<byte> decryptedData = new List<byte>();
             int pos = 1;
 
-            foreach (char ch in text)
+            foreach (byte b in data)
             {
-                char newChar = Calculate(ch, pos, 1/_key);
-                decryptedText += newChar;
+                byte newByte = Calculate(b, pos, 1/_key);
+                decryptedData.Add(newByte);
                 pos++;
             }
 
-            return decryptedText;
+            return decryptedData.ToArray();
         }
 
-        public string Encrypt(string text)
+        public byte[] Encrypt(byte[] data)
         {
-            string encryptedText = "";
+            List<byte> encryptedText = new List<byte>();
             int pos = 1;
 
-            foreach (char ch in text)
+            foreach (byte b in data)
             {
-                char newChar = Calculate(ch, pos, _key);
-                encryptedText += newChar;
+                byte newByte = Calculate(b, pos, _key);
+                encryptedText.Add(newByte);
                 pos++;
             }
 
-            return encryptedText;
+            return encryptedText.ToArray();
         }
 
-        private char Calculate(char ch, int pos, int Key)
+        private byte Calculate(byte b, int pos, int Key)
         {
-            char newCh;
-            newCh = (char)(ch + (pos * Key));
+            byte newByte;
+            newByte = (byte)(b + (pos * Key));
 
-            return newCh;
+            return newByte;
         }
     }
 }
