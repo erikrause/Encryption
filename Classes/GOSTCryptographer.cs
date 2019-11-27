@@ -86,24 +86,22 @@ namespace lab1_Encryption_.Classes
         }
         public byte[] Encrypt(byte[] data)
         {
-            UInt64[] inputBlocks = null; // GetBlocks(data);
+            UInt64[] inputBlocks =  GetBlocks(data);
             var outputBlocks = SimpleReplacement(inputBlocks, true);
 
             byte[] outputBytes = GetBytes(outputBlocks);
-            //return Encoding.ASCII.GetString(outputBytes);
-            return null;
+            return outputBytes;
         }
         public byte[] Decrypt(byte[] data)
         {
-            UInt64[] inputBlocks = null; //GetBlocks(data);
+            UInt64[] inputBlocks = GetBlocks(data);
             var outputBlocks = SimpleReplacement(inputBlocks, false);
             byte[] outputBytes = GetBytes(outputBlocks);
-            //return Encoding.ASCII.GetString(outputBytes);
-            return null;
+            return outputBytes;
         }
-        protected UInt64[] GetBlocks(string input)
+        protected UInt64[] GetBlocks(byte[] input)
         {
-            var inputBytes = Encoding.ASCII.GetBytes(input);
+            var inputBytes = input;
             // Проверка открытого текста на кратность 64 битам:
             int blocksCount = inputBytes.Length/8;
             var mod = inputBytes.Length % 8;
@@ -169,25 +167,30 @@ namespace lab1_Encryption_.Classes
         {
             var result = new UInt64[inputBlocks.Length];
 
-            var key = _key;
+            var cycleKeys = GenerateCycleKeys(_key);
             // Reverse key on Decryption:
             if (!isEncryption)
             {
-                key = key.Reverse().ToArray();
+                cycleKeys = cycleKeys.Reverse().ToArray();
             }
 
             for (int i = 0; i < inputBlocks.Length; i++)
             {
-                result[i] = CalculateBlock(inputBlocks[i], key);
+                result[i] = CalculateBlock(inputBlocks[i], cycleKeys);
             }
             return result;
         }
 
-        protected UInt64 CalculateBlock(UInt64 block, UInt32[] key)
+        protected UInt64 CalculateBlock(UInt64 block, UInt32[] cycleKeys)
         {
             UInt64 result = block;
 
-            for (int i = 0; i < 3; i++)     // почему 3??
+            foreach(var key in cycleKeys)
+            {
+                result = MainCryptoStep(result, key);
+            }
+            /*
+            for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
@@ -198,7 +201,7 @@ namespace lab1_Encryption_.Classes
             for (int j = 7; j >= 0; j--)
             {
                 result = this.MainCryptoStep(result, key[j]);
-            }
+            }*/
 
             result = ((result & UInt32.MaxValue) << 32) | (result >> 32);
 
@@ -300,7 +303,6 @@ namespace lab1_Encryption_.Classes
             return newBlock;        // check return.
         }
 
-
         protected BitArray Calculate(BitArray input, bool isEncryption)
         {
             var X = GenerateSubkeys(isEncryption);
@@ -342,6 +344,27 @@ namespace lab1_Encryption_.Classes
 
             return outputBits;
         }
+
+        private UInt32[] GenerateCycleKeys(UInt32[] keys)
+        {
+            UInt32[] CycleKeys = new UInt32[32];
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    CycleKeys[j] = _key[j];
+                }
+            }
+
+            for (int j = 7; j >= 0; j--)
+            {
+                CycleKeys[j] = _key[j];
+            }
+
+            return CycleKeys;
+        }
+
         protected BitArray Function(in BitArray A, in BitArray X, int round)
         {
             var newA = new BitArray(A);

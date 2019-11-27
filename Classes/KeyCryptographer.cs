@@ -55,7 +55,7 @@ namespace lab1_Encryption_.Classes
             return encryptedText.ToArray();
         }
 
-        private byte Calculate(byte b, int pos, int Key)
+        private byte Calculate(byte b, int pos, int Key)    // need to debug decrypt!!!
         {
             byte newByte;
             newByte = (byte)(b + (pos * Key));
