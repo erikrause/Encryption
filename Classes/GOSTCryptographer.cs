@@ -58,20 +58,33 @@ namespace lab1_Encryption_.Classes
             Key = key;
         }
 
-        protected BitArray _key;
+        protected UInt32[] _key;
         public string Key
         {
             set
             {
-                _key = new BitArray(Encoding.ASCII.GetBytes(value));
-                _key.Length = 256;
+                //_key = new BitArray(Encoding.ASCII.GetBytes(value));
+                //_key.Length = 256;
+                _key = new UInt32[8];
+
+                for (int i = 0; i < value.Length; i += 4)
+                {
+                    UInt32 k = value[i];
+                    k = k << 8;
+                    k = k | value[i + 1];
+                    k = k << 8;
+                    k = k | value[i + 2];
+                    k = k << 8;
+                    k = k | value[i + 3];
+                    _key[i / 4] = k;
+                }
             }
         }
         public string Encrypt(string text)
         {
-            var input = new BitArray(Encoding.ASCII.GetBytes(text));
+            UInt64[] inputBlocks = GetBlocks(text);
 
-            var outputBits = Calculate(input, true);
+            var outputBits = SimpleReplacement(inputBlocks, true);
 
             var outputBytes = new byte[outputBits.Length / 8];
             outputBits.CopyTo(outputBytes, 0);
@@ -79,6 +92,153 @@ namespace lab1_Encryption_.Classes
 
             return Encoding.ASCII.GetString(outputBytes);
         }
+
+        protected UInt64[] GetBlocks(string input)
+        {
+            var inputBytes = Encoding.ASCII.GetBytes(input);
+            // Проверка открытого текста на кратность 64 битам:
+            int blocksCount = 0;
+            var mod = inputBytes.Length % 8;
+            if (mod != 0)
+            {
+                blocksCount = (inputBytes.Length + (8 - mod)) / 8;
+            }
+
+            var Blocks = new UInt64[blocksCount];
+            var inputUints = inputBytes.Cast<UInt64>().ToArray();      // check return
+            Array.Copy(inputUints, Blocks, inputUints.Length);      // check blocks
+            
+            return Blocks;      // check return
+        }
+
+        protected UInt64[] SimpleReplacement(UInt64[] inputBlocks, bool isEncryption)
+        {
+            var result = new UInt64[inputBlocks.Length];
+
+            for (int i = 0; i < inputBlocks.Length; i++)
+            {
+                result[i] = CalculateBlock(inputBlocks[i]);
+            }
+            return result;
+        }
+
+        protected UInt64 CalculateBlock(UInt64 block)
+        {
+            UInt64 result = block;
+
+            for (int i = 0; i < 3; i++)     // почему 3??
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    result = this.MainCryptoStep(result, _key[j]);
+                }
+            }
+
+            for (int j = 7; j >= 0; j--)
+            {
+                result = this.MainCryptoStep(result, _key[j]);
+            }
+
+            result = ((result & UInt32.MaxValue) << 32) | (result >> 32);
+
+            return result;
+        }
+
+        protected UInt64 MainCryptoStep(UInt64 data, UInt32 keyPart)
+        {
+            #region шаг 0 - разбивание UInt64 на два UInt32
+
+            var n2 = (UInt32)(data >> 32);
+            var n1 = (UInt32)(data & UInt32.MaxValue);
+
+            #endregion
+
+            #region шаг 1 - сложение по модулю 2^32
+
+            UInt32 step1Value = n1 + keyPart;
+
+            #endregion
+
+            #region шаг 2 - замена
+
+           uint step2Value = ReplaceValues(step1Value);
+
+            #endregion
+
+            #region шаг 3 - сдвиг влево на 11
+            
+            uint step3Value = BitShift(step2Value, -11);
+
+            #endregion
+
+            #region шаг 4 - сложение по модулю 2
+
+            uint step4Value = step3Value ^ n2;
+
+            #endregion
+
+            #region шаг 5 - сдвиг по цепочке
+
+            n2 = n1;
+            n1 = step4Value;
+
+            #endregion
+
+            #region шаг 6 - возврат полученного значения
+
+            UInt64 step6Value = (UInt64)n2 << 32 | n1;
+
+            #endregion
+
+            return step6Value;
+        }
+        private uint ReplaceValues(uint step1Value)     // change table size
+        {
+            uint result = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                result <<= 4;
+                int shift = 32 - 4 - 4 * i;
+                uint index = (step1Value >> shift) & 0xf;
+                step1Value = step1Value & (UInt32.MaxValue - ((UInt32)0xf << shift));
+                result += S[7 - i, index];
+            }
+            return result;      
+        }
+        protected UInt32 BitShift(UInt32 block, int bias)
+        {
+            //int bitsInChar = sizeof(char) * 8;
+            UInt32 newBlock;
+            UInt32 transfer = new UInt32();
+            Func<UInt32> shift;
+
+            if (bias >= 0)
+            {
+                shift = delegate ()
+                {
+                    transfer = (UInt32)(block << (32 - bias));
+                    newBlock = (UInt32)(block >> bias);
+                    newBlock = (UInt32)(newBlock | transfer);
+                    return newBlock;
+                };
+
+            }
+            else
+            {
+                bias = -bias;
+                shift = delegate ()
+                {
+                    transfer = (UInt32)(block >> (32 - bias));
+                    newBlock = (UInt32)(block << bias);
+                    newBlock = (UInt32)(newBlock | transfer);
+                    return newBlock;
+                };
+            }
+            newBlock = shift();
+
+            return newBlock;        // check return.
+        }
+
 
         protected BitArray Calculate(BitArray input, bool isEncryption)
         {
@@ -184,7 +344,7 @@ namespace lab1_Encryption_.Classes
 
                 for (j = 0; j < K[i].Length; j++)
                 {
-                    K[i][j] = _key[(_key.Length / K.Length) * i + j];
+                    //K[i][j] = _key[(_key.Length / K.Length) * i + j];
                 }
             }
 
