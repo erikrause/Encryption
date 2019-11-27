@@ -168,7 +168,7 @@ namespace lab1_Encryption_.Classes
 
             foreach (var key in cycleKeys)
             {
-                result = MainCryptoStep(result, key);
+                result = Step(result, key);
             }
 
             result = ((result & UInt32.MaxValue) << 32) | (result >> 32);
@@ -176,7 +176,7 @@ namespace lab1_Encryption_.Classes
             return result;
         }
 
-        protected UInt64 MainCryptoStep(UInt64 data, UInt32 keyPart)
+        protected UInt64 Step(UInt64 data, UInt32 keyPart)
         {
             #region шаг 0 - разбивание UInt64 на два UInt32
 
@@ -224,7 +224,7 @@ namespace lab1_Encryption_.Classes
 
             return step6Value;
         }
-        private uint ReplaceValues(uint step1Value)     // change table size
+        protected uint ReplaceValues(uint step1Value)     // change table size
         {
             uint result = 0;
             for (int i = 0; i < 8; i++)
@@ -270,7 +270,7 @@ namespace lab1_Encryption_.Classes
 
             return newBlock;        // check return.
         }
-        private UInt32[] GenerateCycleKeys(UInt32[] keys)
+        protected UInt32[] GenerateCycleKeys(UInt32[] keys)
         {
             UInt32[] CycleKeys = new UInt32[32];
 
