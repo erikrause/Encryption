@@ -67,15 +67,19 @@ namespace lab1_Encryption_.Classes
                 //_key.Length = 256;
                 _key = new UInt32[8];
 
-                for (int i = 0; i < value.Length; i += 4)
+                var byteKey = new byte[32];
+
+                Array.Copy(Encoding.ASCII.GetBytes(value), byteKey, value.Length);
+
+                for (int i = 0; i < byteKey.Length; i += 4)
                 {
-                    UInt32 k = value[i];
+                    UInt32 k = byteKey[i];
                     k = k << 8;
-                    k = k | value[i + 1];
+                    k = k | byteKey[i + 1];
                     k = k << 8;
-                    k = k | value[i + 2];
+                    k = k | byteKey[i + 2];
                     k = k << 8;
-                    k = k | value[i + 3];
+                    k = k | byteKey[i + 3];
                     _key[i / 4] = k;
                 }
             }
@@ -83,46 +87,102 @@ namespace lab1_Encryption_.Classes
         public string Encrypt(string text)
         {
             UInt64[] inputBlocks = GetBlocks(text);
-
-            var outputBits = SimpleReplacement(inputBlocks, true);
-
-            var outputBytes = new byte[outputBits.Length / 8];
-            outputBits.CopyTo(outputBytes, 0);
-
-
+            var outputBlocks = SimpleReplacement(inputBlocks, true);
+            //var outputBytes = new byte[outputBlocks.Length / 8];
+            //outputBlocks.CopyTo(outputBytes, 0);
+            byte[] outputBytes = GetBytes(outputBlocks);
             return Encoding.ASCII.GetString(outputBytes);
         }
-
+        public string Decrypt(string text)
+        {
+            UInt64[] inputBlocks = GetBlocks(text);
+            var outputBlocks = SimpleReplacement(inputBlocks, false);
+            byte[] outputBytes = GetBytes(outputBlocks);
+            return Encoding.ASCII.GetString(outputBytes);
+        }
         protected UInt64[] GetBlocks(string input)
         {
             var inputBytes = Encoding.ASCII.GetBytes(input);
             // Проверка открытого текста на кратность 64 битам:
-            int blocksCount = 0;
+            int blocksCount = inputBytes.Length/8;
             var mod = inputBytes.Length % 8;
             if (mod != 0)
             {
                 blocksCount = (inputBytes.Length + (8 - mod)) / 8;
             }
 
+            // Добавление нулей в конец блока:
+            var inputBytesBlocks = new byte[blocksCount * 8];
+            Array.Copy(inputBytes, inputBytesBlocks, inputBytes.Length);
+
+            // From byte[] to uint[]:
             var Blocks = new UInt64[blocksCount];
-            var inputUints = inputBytes.Cast<UInt64>().ToArray();      // check return
-            Array.Copy(inputUints, Blocks, inputUints.Length);      // check blocks
+            for (int i = 0; i < blocksCount; i++)
+            {
+                Blocks[i] = GetUint64From8Bytes(inputBytesBlocks, 8 * i);
+            }
+
             
             return Blocks;      // check return
+        }
+
+        protected byte[] GetBytes(UInt64[] blocks)
+        {
+            byte[] bytes = new byte[blocks.Length * 8];
+
+            for (int i = 0; i < blocks.Length; i ++)
+            {
+                var temp = Get8BytesFromUInt64(blocks[i]);
+
+                for (int bIndex = 0; bIndex < temp.Length; bIndex++)
+                {
+                    bytes[bIndex + i * 8] = temp[bIndex];
+                }
+            }
+
+            return bytes;
+        }
+        public static UInt64 GetUint64From8Bytes(byte[] s, int startIndex)
+        {
+            UInt64 result = 0;
+            for (int i = startIndex; i < startIndex + 8; i++)
+            {
+                int shift = (56 - 8 * i);
+                result += ((UInt64)s[i] << shift);
+            }
+            return result;
+        }
+        public static byte[] Get8BytesFromUInt64(UInt64 s)
+        {
+            var result = new byte[8];
+            for (int i = 0; i < 8; i++)
+            {
+                int shift = (56 - 8 * i);
+                result[i] = (byte)(s >> shift);
+                s = s & (UInt64.MaxValue - ((UInt64)0xff << shift));
+            }
+            return result;
         }
 
         protected UInt64[] SimpleReplacement(UInt64[] inputBlocks, bool isEncryption)
         {
             var result = new UInt64[inputBlocks.Length];
 
+            var key = _key;
+            // Reverse key on Decryption:
+            if (!isEncryption)
+            {
+                key = key.Reverse().ToArray();
+            }
+
             for (int i = 0; i < inputBlocks.Length; i++)
             {
-                result[i] = CalculateBlock(inputBlocks[i]);
+                result[i] = CalculateBlock(inputBlocks[i], key);
             }
             return result;
         }
 
-        protected UInt64 CalculateBlock(UInt64 block)
+        protected UInt64 CalculateBlock(UInt64 block, UInt32[] key)
         {
             UInt64 result = block;
 
@@ -130,13 +190,13 @@ namespace lab1_Encryption_.Classes
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    result = this.MainCryptoStep(result, _key[j]);
+                    result = this.MainCryptoStep(result, key[j]);
                 }
             }
 
             for (int j = 7; j >= 0; j--)
             {
-                result = this.MainCryptoStep(result, _key[j]);
+                result = this.MainCryptoStep(result, key[j]);
             }
 
             result = ((result & UInt32.MaxValue) << 32) | (result >> 32);
@@ -161,7 +221,7 @@ namespace lab1_Encryption_.Classes
 
             #region шаг 2 - замена
 
-           uint step2Value = ReplaceValues(step1Value);
+            uint step2Value = ReplaceValues(step1Value);
 
             #endregion
 
@@ -281,18 +341,6 @@ namespace lab1_Encryption_.Classes
 
             return outputBits;
         }
-        public string Decrypt(string text)
-        {
-            var input = new BitArray(Encoding.ASCII.GetBytes(text));
-
-            var outputBits = Calculate(input, false);
-
-            var outputBytes = new byte[outputBits.Length / 8];
-            outputBits.CopyTo(outputBytes, 0);
-
-            return Encoding.ASCII.GetString(outputBytes);
-        }
-
         protected BitArray Function(in BitArray A, in BitArray X, int round)
         {
             var newA = new BitArray(A);
