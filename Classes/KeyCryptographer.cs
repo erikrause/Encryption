@@ -27,12 +27,19 @@ namespace lab1_Encryption_.Classes
         }
         public byte[] Decrypt(byte[] data)
         {
+            List<int> encryptedData = new List<int>();
+            // Byte[] to int[]:
+            for(int i = 0; i < data.Length / 4; i++)
+            {
+                encryptedData.Add(BitConverter.ToInt32(data, i * 4));
+            }
+
             List<byte> decryptedData = new List<byte>();
             int pos = 1;
 
-            foreach (byte b in data)
+            foreach (int b in encryptedData)
             {
-                byte newByte = Calculate(b, pos, 1/_key);
+                byte newByte = (byte)Calculate(b, pos, -_key);
                 decryptedData.Add(newByte);
                 pos++;
             }
@@ -42,25 +49,32 @@ namespace lab1_Encryption_.Classes
 
         public byte[] Encrypt(byte[] data)
         {
-            List<byte> encryptedText = new List<byte>();
+            List<int> encryptedData = new List<int>();
             int pos = 1;
 
-            foreach (byte b in data)
+            foreach (int value in data)
             {
-                byte newByte = Calculate(b, pos, _key);
-                encryptedText.Add(newByte);
+                int newValue = Calculate(value, pos, _key);
+                encryptedData.Add(newValue);
                 pos++;
             }
 
-            return encryptedText.ToArray();
+            List<byte> encryptedBytes = new List<byte>();
+            // Int[] to byte[]:
+            foreach(int value in encryptedData)
+            {
+                encryptedBytes.AddRange(BitConverter.GetBytes(value));
+            }
+
+            return encryptedBytes.ToArray();
         }
 
-        private byte Calculate(byte b, int pos, int Key)    // need to debug decrypt!!!
+        private int Calculate(int value, int pos, int Key)
         {
-            byte newByte;
-            newByte = (byte)(b + (pos * Key));
+            int newValue;
+            newValue = (value + (pos * Key));
 
-            return newByte;
+            return newValue;
         }
     }
 }
